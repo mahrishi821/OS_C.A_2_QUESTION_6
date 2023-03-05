@@ -1,0 +1,29 @@
+# Define the three queues with their priorities
+queue1_priority = int(input("Enter priority for Queue 1: "))
+queue2_priority = int(input("Enter priority for Queue 2: "))
+queue3_priority = int(input("Enter priority for Queue 3: "))
+
+# Make sure the priorities are different
+assert queue1_priority != queue2_priority != queue3_priority
+
+# Define the quantum times for each queue
+queue1_quantum = 10
+queue2_quantum = 10
+queue3_quantum = 10
+
+# Define the Round Robin quantum for the highest priority queue
+highest_priority_quantum = 4
+
+# Define the lists to hold the processes in each queue
+queue1 = []
+queue2 = []
+queue3 = []
+
+# Define a function to add a process to the appropriate queue based on its priority
+def add_process_to_queue(priority, burst_time):
+    if priority == queue1_priority:
+        queue1.append((burst_time, 0)) # The second element is the remaining time for Round Robin
+    elif priority == queue2_priority:
+        queue2.append(burst_time)
+    else:
+        queue3.append(burst_time)
