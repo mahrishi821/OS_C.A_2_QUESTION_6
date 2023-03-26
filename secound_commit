@@ -1,0 +1,87 @@
+
+from collections import deque
+from queue import PriorityQueue
+
+class Process:
+    def __init__(self, pid, priority, burst_time):
+        self.pid = pid
+        self.priority = priority
+        self.burst_time = burst_time
+        self.rem_time = burst_time
+
+    def __lt__(self, other):
+        return self.priority < other.priority
+
+q1 = deque()
+q2 = PriorityQueue()
+q3 = deque()
+
+def enqueue(p):
+    if p.priority == q1_priority:
+        q1.append(p)
+    elif p.priority == q2_priority:
+        q2.put(p)
+    elif p.priority == q3_priority:
+        q3.append(p)
+
+def round_robin(q):
+    tq = 4
+    while True:
+        done = True
+        for i in range(len(q)):
+            p = q.popleft()
+            if p.rem_time > 0:
+                done = False
+                if p.rem_time > tq:
+                    p.rem_time -= tq
+                    q.append(p)
+                else:
+                    p.rem_time = 0
+        if done:
+            break
+
+def priority_scheduling(q):
+    pass
+
+def first_come_first_serve(q):
+    pass
+
+q1_priority = int(input("Enter priority for queue 1: "))
+q2_priority = int(input("Enter priority for queue 2: "))
+while q2_priority == q1_priority:
+    print("Priority for queue 2 must be different from queue 1")
+    q2_priority = int(input("Enter priority for queue 2: "))
+q3_priority = int(input("Enter priority for queue 3: "))
+while q3_priority == q1_priority or q3_priority == q2_priority:
+    print("Priority for queue 3 must be different from queue 1 and queue 2")
+    q3_priority = int(input("Enter priority for queue 3: "))
+
+n = int(input("Enter number of processes: "))
+for i in range(n):
+    priority, burst_time = map(int, input("Enter priority and burst time: ").split())
+    while priority != q1_priority and priority != q2_priority and priority != q3_priority:
+        print(f"Priority must be one of {q1_priority}, {q2_priority}, or {q3_priority}")
+        priority, burst_time = map(int, input("Enter priority and burst time: ").split())
+    p = Process(i + 1, priority, burst_time)
+    enqueue(p)
+
+if max(q1_priority,q2_priority,q3_priority) == q1_priority:
+    round_robin(q1)
+elif max(q1_priority,q2_priority,q3_priority) == q2_priority:
+    round_robin(q2)
+else:
+    round_robin(q3)
+
+if (q1_priority>q2_priority and q1_priority<q3_priority) or (q1_priority<q2_priority and q1_priority>q3_priority):
+    priority_scheduling(q1)
+elif (q2_priority>q1_priority and q2_priority<q3_prioriy) or (q2_priority<q1_priority and q2_priority>q3_priority):
+        priority_scheduling(q2)
+else:
+    priority_scheduling(q3)
+
+if min(q1_priority,q2_priority,q3_priority) == q1_priority:
+    first_come_first_serve(q1)
+elif min(q1_priority,q2_priority,q3_priority) == q2_priority:
+    first_come_first_serve(q2)
+else:
+    first_come_first_serve(q3)
