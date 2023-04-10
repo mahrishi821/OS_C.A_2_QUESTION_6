@@ -1,0 +1,81 @@
+import queue
+
+# User input for priority ranges
+high_range = input("Enter the priority range for the high priority queue (e.g. 1-5): ")
+high_range = list(range(int(high_range.split("-")[0]), int(high_range.split("-")[1])+1))
+medium_range = input("Enter the priority range for the medium priority queue (e.g. 6-10): ")
+medium_range = list(range(int(medium_range.split("-")[0]), int(medium_range.split("-")[1])+1))
+while medium_range[0] <= high_range[-1]:
+    print("The first value of the medium priority range must be greater than the last value of the high priority range.")
+    medium_range = input("Enter the priority range for the medium priority queue (e.g. 6-10): ")
+    medium_range = list(range(int(medium_range.split("-")[0]), int(medium_range.split("-")[1])+1))
+low_range = input("Enter the priority range for the low priority queue (e.g. 11-15): ")
+low_range = list(range(int(low_range.split("-")[0]), int(low_range.split("-")[1])+1))
+while low_range[0] <= medium_range[-1]:
+    print("The first value of the low priority range must be greater than the last value of the medium priority range.")
+    low_range = input("Enter the priority range for the low priority queue (e.g. 11-15): ")
+    low_range = list(range(int(low_range.split("-")[0]), int(low_range.split("-")[1])+1))
+
+# Create queues
+high_priority = queue.Queue()
+medium_priority = []
+low_priority = queue.Queue()
+
+# User input for number of processes
+num_processes = int(input("Enter the number of processes: "))
+
+# User input for process information
+for i in range(1, num_processes+1):
+    process_number = f"P{i}"
+    priority = int(input(f"Enter the process priority for {process_number}: "))
+    while (priority not in high_range) and (priority not in medium_range) and (priority not in low_range):
+        print("Please enter a priority from one of the above three priority ranges.")
+        priority = int(input(f"Enter the process priority for {process_number}: "))
+    burst_time = int(input(f"Enter the burst time for {process_number}: "))
+    
+    # Assign process to appropriate queue based on priority
+    if priority in high_range:
+        high_priority.put((process_number, burst_time))
+    elif priority in medium_range:
+        medium_priority.append((process_number, burst_time,priority))
+    elif priority in low_range:
+        low_priority.put((process_number, burst_time))
+
+# Round Robin scheduling for high priority queue
+quantum_time = 4
+queue_quantum_time = 10
+while not high_priority.empty() or len(medium_priority) > 0 or not low_priority.empty():
+    time_spent_on_queue = 0
+    while (not high_priority.empty()) and (time_spent_on_queue <= queue_quantum_time):
+        process_info = high_priority.get()
+        process_number = process_info[0]
+        burst_time = process_info[1]
+        
+        if burst_time > quantum_time:
+            time_spent_on_queue += quantum_time
+            burst_time -= quantum_time
+            print(f"{process_number} executed for {quantum_time} seconds.")
+            high_priority.put((process_number, burst_time))
+        else:
+            time_spent_on_queue += burst_time
+            print(f"{process_number} executed for {burst_time} seconds and finished.")
+        
+    # Priority scheduling for medium priority queue
+    medium_priority.sort(key=lambda x: x[2])
+    time_spent_on_queue = 0
+    while (len(medium_priority) > 0) and (time_spent_on_queue <= queue_quantum_time):
+        process_info = medium_priority.pop(0)
+        process_number = process_info[0]
+        burst_time = process_info[1]
+        
+        time_spent_on_queue += burst_time
+        print(f"{process_number} executed for {burst_time} seconds and finished.")
+    # First come first serve scheduling for low priority queue
+    time_spent_on_queue = 0
+    while (not low_priority.empty()) and (time_spent_on_queue <= queue_quantum_time):
+        process_info = low_priority.get()
+        process_number = process_info[0]
+        burst_time = process_info[1]
+        
+        time_spent_on_queue += burst_time
+        print(f"{process_number} executed for {burst_time} seconds and finished.")
